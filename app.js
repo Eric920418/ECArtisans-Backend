@@ -6,6 +6,17 @@ var logger = require('morgan');
 //routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var activitiesRouter = require('./routes/activities')
+var authRouter = require('./routes/auth')
+var cartsRouter = require('./routes/carts')
+var detailRouter = require('./routes/detail')
+var discountsRouter = require('./routes/discounts')
+var homeRouter = require('./routes/home')
+var ordersRouter = require('./routes/orders')
+var productsRouter = require('./routes/products')
+var searchRouter = require('./routes/search')
+var sellersRouter = require('./routes/sellers')
+var shopRouter = require('./routes/shop')
 
 // mongodb
 const dotenv = require('dotenv');
@@ -27,19 +38,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);  //預設(目前無用)
 //data
 app.use('/users', usersRouter);
-// app.use('/sellers',)
-// app.use('/products',)
-// app.use('/orders',)
-// app.use('/activities',)
-// app.use('/discounts',)
-// app.use('/carts',)
-// //view
-// app.use('/home',)
-// app.use('/shop',)
-// app.use('/detail',)
-// //Function
-// app.use('/auth',)
-// app.use('/search',)
+app.use('/sellers', sellersRouter)
+app.use('/products', productsRouter)
+app.use('/orders', ordersRouter)
+app.use('/activities', activitiesRouter)
+app.use('/discounts', discountsRouter)
+app.use('/carts', cartsRouter)
+//view
+app.use('/home', homeRouter)
+app.use('/shop', shopRouter)
+app.use('/detail', detailRouter)
+//Function
+app.use('/auth', authRouter)
+app.use('/search',searchRouter)
 
 mongoose.connect(process.env.DATABASE)    
 .then(()=>{
