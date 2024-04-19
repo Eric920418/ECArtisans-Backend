@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const sellerSchema = new mongoose.Schema({});
+const sellerSchema = new Schema({});
 const Sellers = mongoose.model('Sellers', sellerSchema);
 
 

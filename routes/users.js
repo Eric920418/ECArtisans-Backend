@@ -30,7 +30,7 @@ router.get('/:id', async(req, res, next)=> {
   const headers = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'PATCH, PUT, POST, GET, OPTIONS, DELETE',
+    'Access-Control-Allow-Methods': 'PATCH, PUT, POST, GET, OPTIONS, DELETE,PUT',
     'Content-Type': 'application/json'
   }
   try {
