@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
-const Auth = require('../models/auth.js')
+const Seller = require('../models/seller.js')
 
 const bcrypt = require('bcrypt'); //加密套件
 const validator = require('validator') //表單驗證
@@ -52,7 +52,7 @@ router.post('/shopLogin', async(req, res, next)=> {
 
   //加密
   password = await bcrypt.hash(req.body.password,12)
-  const newUser = await Auth.create({
+  const newUser = await Seller.create({
     bossName, 
     gender, 
     phone, 
