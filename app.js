@@ -65,15 +65,39 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+const resErrorProd = (err,res) =>{
+  if(err.isOperational){
+    res.status(err.statusCode).json({
+      message:err.message
+    })
+  }else{
+    console.error("出現重大錯誤",err)
+    res.status(500).json({
+      status: 'error',
+      message: '系統錯誤～～'
+    })
+  }
+}
+const resErrorDev = (err,res) =>{
+  res.status(err.statusCode).json({
+    message:err.message,
+    error:err,
+    stack:err.stack
+  })
+}
+
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  err.statusCode = err.statusCode || 500
+  if(process.env.NODE_ENV === 'dev'){
+    return resErrorDev(err,res)
+  }
+  if(err.name === 'ValidationError'){
+    err.messages = "資料不正確 請重新輸入"
+    err.isOperational = true
+    return resErrorProd(err,res)
+  }
+  resErrorProd(err,res)
 });
 
 module.exports = app;
