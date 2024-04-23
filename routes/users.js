@@ -60,17 +60,33 @@ router.put('/:id', async(req, res, next)=> {
   }
   try {
     const user = req.params.id;
-    const data = await User.updateOne({_id:user},req.body);
-    res.writeHead(200,headers);
-    res.write(JSON.stringify({
-        "status":"success",
-        "message": "成功修改資料",
-        data
-    }))
-    res.end();
+        const updateData = {
+            name: req.body.name,
+            gender: req.body.gender,
+            avatar: req.body.avatar,
+            birthday: req.body.birthday,
+            phone: req.body.phone,
+            mail: req.body.mail,
+            address: req.body.address,
+            password: req.body.password,
+            otherPassword: req.body.otherPassword,
+        };
+
+        const updatedUser = await User.findByIdAndUpdate(user, { $set: updateData }, { new: true });
+
+        res.status(200).json({
+            status: "success",
+            message: "成功修改資料",
+            data: updatedUser
+        });
+
+        res.end();
   } catch (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
+    console.error(err);
+    res.status(500).json({
+      "status":"fail",
+      "message": "無法更新個人資料，請檢查所提供的資訊。"
+    });
   }
 });
 module.exports = router;
