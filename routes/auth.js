@@ -77,6 +77,7 @@ router.post('/shopSign', async(req, res, next)=> {
 
 router.post('/shopLogin',async(req,res,next)=>{
   try{
+      // res.setHeader('Access-Control-Allow-Origin', '*');
       const {mail, password} = req.body
       if(!mail||!password){
         return next(appError(400,'帳號密碼不能為空',next))
