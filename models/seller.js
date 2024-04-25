@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SellerSchema = new Schema({
-    
 bossName :{type:String,default:"",require:[true]},
 gender: {type:String,default:""},
 phone:{type:String,default:"",require:[true]},
@@ -19,7 +18,10 @@ salesType:Array,
 member:Array,
 discount:Array,
 activity:Array,
-order:Array,
+order:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Orders' 
+}],
 product:Array,
 collection:{type:String,default:""},
 chat:Array 
