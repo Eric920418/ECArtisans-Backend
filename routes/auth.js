@@ -23,7 +23,7 @@ const generateSendJWT = (user, statusCode, res)=>{
   })
 }
 
-router.post('/shopSign', async(req, res, next)=> {
+router.post('/shop-signUp', async(req, res, next)=> {
   try {
       let {
           bossName, 
@@ -53,6 +53,12 @@ router.post('/shopSign', async(req, res, next)=> {
         return next(appError(400,"郵件格式錯誤",next))
       }
 
+      //驗證是否被註冊過
+      const used = await Seller.findOne({mail:mail})
+      if(used){
+        return next(appError(400,"此郵件已經被使用過了"))
+      }
+
       //加密
       password = await bcrypt.hash(req.body.password,12)
       const newUser = await Seller.create({
@@ -75,7 +81,7 @@ router.post('/shopSign', async(req, res, next)=> {
   }
 });
 
-router.post('/shopLogin',async(req,res,next)=>{
+router.post('/shop-login',async(req,res,next)=>{
   try{
       // res.setHeader('Access-Control-Allow-Origin', '*');
       const {mail, password} = req.body
