@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+<<<<<<< HEAD
     name: {type: String, default: "", require: [true]},
     gender: {type: String, default: "", require: [true]},
     avatar: {type: String, default: "" } ,
@@ -11,6 +12,17 @@ const userSchema = new Schema({
     address: {type: String, default: "", require: [true]},
     password: {type: String, default: "", require: [true], select: false},
     otherPassward: {type: String, default: "123456"},
+=======
+    name: String,
+    gender: String,
+    avatar: String,
+    birthday: String,
+    phone: String,
+    mail: String,
+    address: String,
+    passward: String,
+    otherPassword:{type:String,default:"12345678"},
+>>>>>>> dc8fbef (test: 💍 所有使用者備用密碼完成)
     discount: Array,
     spHistory: Array,
     likeShop: Array,
