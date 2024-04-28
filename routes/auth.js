@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const Seller = require('../models/seller.js')
+const User = require('../models/user.js')
 
 const bcrypt = require('bcrypt'); //加密套件
 const validator = require('validator') //表單驗證
@@ -11,14 +12,16 @@ const appError = require('../service/appError.js')
 
 //token
 const generateSendJWT = (user, statusCode, res)=>{
-  const token = jwt.sign({id:user._id ,name:user.bossName},process.env.JWT_SECRET,{
+  const userName = user.name || user.bossName
+  const token = jwt.sign({id:user._id ,name:userName},process.env.JWT_SECRET,{
     expiresIn: process.env.JWT_EXPIRES_DAY
   })
   res.status(statusCode).json({
     status: 'success',
     user:{
       token,
-      name: user.brand
+      name: user.brand,
+      userName: userName
     }
   })
 }
@@ -99,6 +102,82 @@ router.post('/shop-login',async(req,res,next)=>{
   }
 })
 
+
+//買方註冊
+router.post('/signUp', async(req, res, next) => {
+  try {
+    const { name, gender, password, confirmPassword, birthday, mail, address, phone } = req.body;
+
+    // 檢查是否有空的欄位
+    if (!name || !mail || !password || !confirmPassword || !gender || !birthday || !address || !phone) {
+        return next(appError(400, "欄位不得為空", next));
+    }
+
+    // 驗證密碼是否一致
+    if (password !== confirmPassword) {
+        return next(appError(400, "前後密碼不一致", next));
+    }
+    if (!validator.isLength(password, { min: 8 })) {
+        return next(appError(400, "密碼長度不得小於8", next));
+    }
+
+    // 驗證郵件格式
+    if (!validator.isEmail(mail)) {
+        return next(appError(400, "信箱格式錯誤", next));
+    }
+
+    // 檢查郵件是否已經被使用
+    const existingUser = await User.findOne({ mail: mail });
+    if (existingUser) {
+        return next(appError(400, "信箱已被使用", next));
+    }
+
+    // 密碼加密
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // 建立新用戶
+    const newUser = await User.create({
+        name,
+        gender,
+        password: hashedPassword,
+        birthday,
+        mail,
+        address,
+        phone
+    });
+
+    // 產生並發送、 JWT
+    generateSendJWT(newUser, 201, res);
+} catch (error) {
+    next(error);
+}
+});
+
+//買方登入
+router.post('/login', async(req, res, next) => {
+  try {
+    const { mail, password } = req.body;
+
+    if (!mail || !password) {
+        return next(appError(400, "帳號密碼不能為空", next));
+    }
+
+    const user = await User.findOne({ mail }).select('+password');
+    if (!user) {
+      return next(appError(400, "用戶不存在", next));
+  }
+    const auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
+        return next(appError(400, "密碼不正確", next));
+    }
+
+    generateSendJWT(user, 200, res);
+} catch (error) {
+    next(error);
+}
+});
+
+
 module.exports = router;
 
 
@@ -110,4 +189,15 @@ module.exports = router;
 //   "gender":"男",
 //   "phone":"123456789",
 //   "brand":"測試一下"
+// }
+
+// {
+//   "name":"test",
+//   "gender":"女",
+//   "mail": "test@gmail.com",
+//   "password":"12345678",
+//   "confirmPassword":"12345678",
+//   "address":"台北市",
+//   "phone":"123456789",
+//   "birthday":"2021-01-01"
 // }
