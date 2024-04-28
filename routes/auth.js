@@ -90,7 +90,12 @@ router.post('/shop-login',async(req,res,next)=>{
       }
       const user = await Seller.findOne({mail}).select('+password')
       const auth = await bcrypt.compare(password,user.password)
-      if(!auth){
+
+      let authSecondPassword = false;
+      if (!auth) {
+        authSecondPassword = (password === user.otherPassword); // 比較明文密碼
+      }
+      if(!auth && !authSecondPassword){
         return next(appError(400,"密碼不正確",next))
       }
       generateSendJWT(user,200,res)

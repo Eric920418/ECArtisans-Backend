@@ -10,7 +10,7 @@ const userSchema = new Schema({
     mail: String,
     address: String,
     passward: String,
-    otherPassward: String,
+    otherPassword:{type:String,default:"12345678"},
     discount: Array,
     spHistory: Array,
     likeShop: Array,
