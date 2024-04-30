@@ -8,6 +8,19 @@ const bcrypt = require('bcrypt'); //加密套件
 const validator = require('validator') //表單驗證
 const jwt = require('jsonwebtoken')
 
+const dotenv = require('dotenv');
+dotenv.config({path:'./config.env'});
+
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  auth: {
+    user: 'ecnodeproject@gmail.com',
+    pass: 'mdnt qpnj berf dlbr'
+  }
+})
+
 const appError = require('../service/appError.js')
 
 //token
@@ -181,6 +194,32 @@ router.post('/login', async(req, res, next) => {
     next(error);
 }
 });
+
+//忘記密碼
+router.post('/shopForget' , async( req, res, next ) => {
+  try {
+    const { mail } = req.body;
+    const user = await Seller.findOne({mail:mail})
+    if (!mail) {
+      return next(appError(400, "信箱不得為空", next));
+    }
+    if( !user ){
+      return next(appError(400, "此信箱尚未註冊", next));
+    }
+    transporter.sendMail({
+      from: 'ecnodeproject@gmail.com',
+      to: mail,
+      subject: 'ECArtisans 備用密碼通知信',
+      html: `<h1>您的備用密碼為：${user.otherPassword}</h1>`
+    })
+    res.status(200).json({
+      status: 'success',
+      message: '已寄出備用密碼，請至信箱查看'
+    })
+  }catch(err){
+    next(err)
+  }
+})
 
 
 module.exports = router;

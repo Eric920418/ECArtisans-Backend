@@ -6,6 +6,7 @@ const Order = require('../models/order.js');
 
 //商家導覽
 router.get('/:seller_id/home', async(req, res, next)=> {
+
   const headers = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
     'Access-Control-Allow-Origin': '*',
@@ -52,6 +53,34 @@ router.get('/:seller_id/information', async(req, res, next)=> {
         "status": "error",
         "message": "Internal Server Error"
     }));
+  }
+});
+router.put('/:seller_id/information' , async (req, res, next) => {
+  const headers = {
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'PATCH, POST, GET, OPTIONS, DELETE ,PUT',
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    const { bossName, phone, brand, address, collection, salesType, introduce } = req.body;
+    const sellerId = req.params.seller_id;
+
+    // Check if seller exists
+    const seller = await Seller.findById(sellerId);
+    if (!seller) {
+      return res.status(404).json({ status: 'error', message: 'Seller not found' });
+    }
+
+    // Update seller information
+    await Seller.updateOne({ _id: sellerId }, { bossName, phone, brand, address, collection, salesType, introduce });
+
+    // Send success response
+    res.status(200).json({ status: 'success', message: 'Seller information updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 'error', message: 'Internal Server Error' });
   }
 });
 //訂單管理

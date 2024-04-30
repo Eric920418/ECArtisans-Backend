@@ -3,6 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+//郵件套件
+var nodemailer = require('nodemailer');
+
 //routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -52,6 +55,8 @@ app.use('/detail', detailRouter)
 //Function
 app.use('/auth', authRouter)
 app.use('/search',searchRouter)
+
+
 
 mongoose.connect(process.env.DATABASE)    
 .then(()=>{
