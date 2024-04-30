@@ -54,10 +54,10 @@ server.listen(port, () => {
     .then((users) => {
       const promises = users.map((user) => {
         const secureRandomNumber = generateSecureRandomNumber(8);
-        return User.updateOne(
-          { name: user.name },
-          { otherPassword: secureRandomNumber }
-        )
+        // return User.updateOne(
+        //   { name: user.name },
+        //   { otherPassword: secureRandomNumber }
+        // )
       });
       return Promise.all(promises);
     });
