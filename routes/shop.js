@@ -40,7 +40,7 @@ router.get('/:seller_id/information', async(req, res, next)=> {
   }
   try{
     const seller = req.params.seller_id;
-    const thisShop = await Seller.findOne({_id:seller})
+    const thisShop = await Seller.findOne({_id:seller}).select({chat:0,product:0,order:0,activity:0,discount:0,member:0,introduce:0,plan:0,planPeriod:0 ,salesType:0})
     res.writeHead(200,headers);
     res.write(JSON.stringify({
         "status":"success",
@@ -68,7 +68,7 @@ router.put('/:seller_id/information' , async (req, res, next) => {
     const sellerId = req.params.seller_id;
 
     // Check if seller exists
-    const seller = await Seller.findById(sellerId);
+    const seller = await Seller.findById(sellerId)
     if (!seller) {
       return res.status(404).json({ status: 'error', message: 'Seller not found' });
     }

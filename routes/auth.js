@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
   port: 465,
   auth: {
     user: 'ecnodeproject@gmail.com',
-    pass: 'mdnt qpnj berf dlbr'
+    pass: process.env.PASS
   }
 })
 
