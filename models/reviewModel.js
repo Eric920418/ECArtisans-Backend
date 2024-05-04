@@ -14,10 +14,15 @@ const reviewSchema = new Schema(
 		comment: {
 			type: String,
 		},
+		createAt: {
+			type: Date,
+			default: Date.now,
+			select: false,
+		},
 	},
-	{ timestamps: true }
+	{ versionKey: false }
 );
 
-const Review = mongoose.model('Product', reviewSchema);
+const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;

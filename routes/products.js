@@ -4,58 +4,35 @@ const mongoose = require('mongoose');
 const Product = require('../models/productModel');
 
 router.get('/', async (req, res, next) => {
-	const headers = {
-		'Access-Control-Allow-Headers':
-			'Content-Type, Authorization, Content-Length, X-Requested-With',
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': 'PATCH, POST, GET,OPTIONS,DELETE,PUT',
-		'Content-Type': 'application/json',
-	};
 	try {
 		const products = await Product.find()
-			.populate('haveStore')
-			.select('productName origin format type image');
-		res.writeHead(200, headers);
-		res.write(
-			JSON.stringify({
-				status: 'success',
+			.populate('SellerOwned')
+			.select('productName origin format category sellerCategory img');
+		res.status(200).json({
+			status: 'success',
+			data: {
 				products,
-			})
-		);
-		res.end();
+			},
+		});
 	} catch (err) {
-		res.status(500).send('Internal Server Error');
+		next(err); // 將錯誤傳遞給錯誤處理中間件(後續填寫)
 	}
 });
 
 //單一產品頁面
 router.get('/:id', async (req, res, next) => {
-	const headers = {
-		'Access-Control-Allow-Headers':
-			'Content-Type, Authorization, Content-Length, X-Requested-With',
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': 'PATCH, POST, GET,OPTIONS,DELETE',
-		'Content-Type': 'application/json',
-	};
 	try {
 		const product = req.params.id;
 		const thisProduct = await Product.findOne({ _id: product });
-		res.writeHead(200, headers);
-		res.write(
-			JSON.stringify({
-				status: 'success',
+		res.status(201).jsonsend({
+			status: 'success',
+			data: {
 				thisProduct,
-			})
-		);
+			},
+		});
 		res.end();
 	} catch (err) {
-		res.writeHead(500, headers);
-		res.end(
-			JSON.stringify({
-				status: 'error',
-				message: 'Internal Server Error',
-			})
-		);
+		next(err); // 將錯誤傳遞給錯誤處理中間件(後續填寫)
 	}
 });
 
