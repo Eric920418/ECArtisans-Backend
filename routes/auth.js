@@ -39,6 +39,7 @@ const generateSendJWT = (user, statusCode, res)=>{
   })
 }
 
+//賣家註冊
 router.post('/shop-signUp', async(req, res, next)=> {
   try {
       let {
@@ -97,6 +98,7 @@ router.post('/shop-signUp', async(req, res, next)=> {
   }
 });
 
+//賣家登入
 router.post('/shop-login',async(req,res,next)=>{
   try{
       // res.setHeader('Access-Control-Allow-Origin', '*');
@@ -122,7 +124,7 @@ router.post('/shop-login',async(req,res,next)=>{
 
 
 //買方註冊
-router.post('/signUp', async(req, res, next) => {
+router.post('/signup', async(req, res, next) => {
   try {
     const { name, gender, password, confirmPassword, birthday, mail, address, phone } = req.body;
 
