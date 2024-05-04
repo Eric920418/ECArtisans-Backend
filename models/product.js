@@ -67,7 +67,7 @@ const productSchema = new Schema(
 		production: {
 			type: String,
 		},
-		isOnShelf: {
+		isOnshelf: {
 			type: Boolean,
 			default: false,
 		},
