@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 const reviewSchema = new Schema(
 	{
 		UserID: {
-			name: mongoose.Schema.Types.ObjectId,
-			ref: 'User',
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Users',
 		},
 		rate: {
 			type: Number,
