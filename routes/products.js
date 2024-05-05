@@ -6,7 +6,7 @@ const Product = require('../models/product');
 router.get('/', async (req, res, next) => {
 	try {
 		const products = await Product.find()
-			.populate('SellerOwned')
+			.populate('sellerOwned')
 			.select('productName origin format category sellerCategory img');
 		res.status(200).json({
 			status: 'success',
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res, next) => {
 	try {
 		const product = req.params.id;
 		const thisProduct = await Product.findOne({ _id: product });
-		res.status(201).jsonsend({
+		res.status(201).json({
 			status: 'success',
 			data: {
 				thisProduct,

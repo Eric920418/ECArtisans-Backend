@@ -108,3 +108,25 @@ const productSchema = new Schema(
 const Product = mongoose.model('Product', productSchema);
 
 module.exports = Product;
+
+//測試用
+
+// {
+//     "productName":"快速充電器",
+//     "sellerCategory": "3C產品",
+//     "category": "電子配件",
+//     "origin": "台灣",
+//     "ingredient": "高導電性合金，耐熱塑膠",
+//     "format": [{
+//         "title":"白色120W",
+//         "price": 800,
+//         "cost": 500,
+//         "stock": 100,
+//         "color":["白色"]
+//     }],
+//     "introduction":"其獨特的智能充電技術能夠自動調節電流，以達到最佳的充電效率，保護您的設備免受過充損害。此充電器小巧便攜，輕鬆放入口袋或背包，不僅適用於所有支…",
+//     "production":"智能製造組裝",
+//     "fare":30,
+//     "pay": ["信用卡付款","ATM匯款","店到店付費"],
+//     "keyword":["充電器","快充"]
+// }
