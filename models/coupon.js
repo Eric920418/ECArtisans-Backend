@@ -1,19 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// 定義買方使用狀態 Schema（已使用、未使用、已過期）
-const userUsageSchema = new Schema({
-    users: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users'
-    },
-    used: {
-        type: String,
-        enum: ['Used', 'Unused', 'Expired'],
-        default: "Unused"
-    },
-});
-
 // 定義折價券 Schema
 const couponSchema = new Schema({
     couponName: String,
@@ -63,8 +50,7 @@ const couponSchema = new Schema({
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Sellers'
-    },
-    userUsage: [userUsageSchema],
+    }
 });
 
 const Coupon = mongoose.model('Coupons', couponSchema);
