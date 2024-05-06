@@ -10,8 +10,11 @@ const userSchema = new Schema({
     mail: {type: String, default: "", require: [true]},
     address: {type: String, default: "", require: [true]},
     password: {type: String, default: "", require: [true], select: false},
-    otherPassward: {type: String, default: "123456"},
-    discount: Array,
+    otherPassword: {type: String, default: "123456", select: false},
+    discount: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupons'
+    }],
     spHistory: Array,
     likeShop: Array,
     collect: Array,

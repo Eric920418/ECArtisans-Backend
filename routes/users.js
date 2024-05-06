@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
-
+const Coupon = require('../models/coupon.js');
 // Get 全部買家
 router.get('/', async(req, res, next)=> {
   const headers = {
@@ -89,4 +89,65 @@ router.put('/:id', async(req, res, next)=> {
     });
   }
 });
+
+// PUT 新增指定會員的折價券
+router.put('/:userId/discounts/:couponId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const couponId = req.params.couponId;
+    const userData = await User.findById(userId);
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    const couponData = await Coupon.findById(couponId);
+    if (!couponData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到折價券"
+      });
+    }
+    userData.discount.push(couponId);
+    await userData.save();
+    res.json({
+        status: "success",
+        message: "成功新增折價券"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    });
+  }
+});
+    
+
+// GET 取得指定會員的全部折價券紀錄
+router.get('/:id/discounts', async (req, res) => {
+  try {
+    const user = req.params.id;
+    const userData = await User.findById(user).populate('discount');
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found"
+      });
+    }
+    res.json({
+        status: "success",
+        message: "成功取得資料",
+        data: userData.discount
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    });
+  }
+});
+
 module.exports = router;
