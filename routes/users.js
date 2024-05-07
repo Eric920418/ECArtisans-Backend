@@ -3,6 +3,12 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
 const Coupon = require('../models/coupon.js');
+
+//這兩行是用來隨機產一組有效的ObjectId 用來測試“找不到使用者” 這個ObjectId，不會被存入資料庫
+// const newuserId = new mongoose.Types.ObjectId();
+// console.log(newuserId.toString());
+
+
 // Get 全部買家
 router.get('/', async(req, res, next)=> {
   const headers = {
@@ -90,8 +96,8 @@ router.put('/:id', async(req, res, next)=> {
   }
 });
 
-// PUT 新增指定會員的折價券
-router.put('/:userId/discounts/:couponId', async (req, res) => {
+// POST 新增指定會員的折價券
+router.post('/:userId/discounts/:couponId', async (req, res) => {
   try {
     const userId = req.params.userId;
     const couponId = req.params.couponId;
@@ -102,12 +108,20 @@ router.put('/:userId/discounts/:couponId', async (req, res) => {
         message: "找不到使用者"
       });
     }
+
     const couponData = await Coupon.findById(couponId);
     if (!couponData) {
       return res.status(404).json({
         status: "error",
         message: "找不到折價券"
       });
+    }
+    // 檢查使用者是否已經有折價券
+    if (userData.discount.includes(couponId)) {
+      return res.status(409).json({
+        status: "error",
+        message: "已經擁有此折價券"
+    });
     }
     userData.discount.push(couponId);
     await userData.save();
