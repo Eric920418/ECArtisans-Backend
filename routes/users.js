@@ -156,6 +156,13 @@ router.get('/:id/discounts/:couponId', async (req, res) => {
   try {
     const userId = req.params.id;
     const couponId = req.params.couponId;
+        // 檢查 userId 是否為有效的 ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "無效的使用者 ID"
+        });
+    }
     const userData = await User.findById(userId).populate('discount');
     if (!userData) {
       return res.status(404).json({
