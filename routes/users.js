@@ -150,4 +150,38 @@ router.get('/:id/discounts', async (req, res) => {
   }
 });
 
+
+// GET 取得指定會員的折價券詳情
+router.get('/:id/discounts/:couponId', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const couponId = req.params.couponId;
+    const userData = await User.findById(userId).populate('discount');
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    const couponData = userData.discount.find(coupon => coupon._id.toString() === couponId);
+    if (!couponData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到折價券"
+      });
+    }
+    res.json({
+        status: "success",
+        message: "成功取得資料",
+        data: couponData
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    });
+  }
+},);
+
 module.exports = router;
