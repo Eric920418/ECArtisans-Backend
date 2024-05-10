@@ -9,6 +9,8 @@ const Order = require('../models/order.js');
 
 const handleErrorAsync = require('../service/handleErrorAsync.js');
 
+const bcrypt = require('bcrypt'); //加密套件
+
 //驗證token
 const isAuth = handleErrorAsync(async (req, res, next) => {
 	let token;
@@ -87,7 +89,6 @@ router.get('/:seller_id/information', async (req, res, next) => {
 			member: 0,
 			introduce: 0,
 			plan: 0,
-			planPeriod: 0,
 			salesType: 0,
 		});
 		res.writeHead(200, headers);
@@ -118,7 +119,7 @@ router.put('/:seller_id/information', async (req, res, next) => {
 	};
 
 	try {
-		const {
+		let {
 			bossName,
 			phone,
 			brand,
@@ -126,9 +127,11 @@ router.put('/:seller_id/information', async (req, res, next) => {
 			collection,
 			salesType,
 			introduce,
+      password
 		} = req.body;
 		const sellerId = req.params.seller_id;
 
+    password = await bcrypt.hash(req.body.password, 12);
 		// Check if seller exists
 		const seller = await Seller.findById(sellerId);
 		if (!seller) {
@@ -140,7 +143,7 @@ router.put('/:seller_id/information', async (req, res, next) => {
 		// Update seller information
 		await Seller.updateOne(
 			{ _id: sellerId },
-			{ bossName, phone, brand, address, collection, salesType, introduce }
+			{ bossName, phone, brand, address, collection, salesType, introduce ,password}
 		);
 
 		// Send success response

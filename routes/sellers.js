@@ -3,6 +3,8 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const Seller = require('../models/seller.js');
 
+const bcrypt = require('bcrypt'); //加密套件
+const jwt = require('jsonwebtoken');
 
 
 //取得所有賣家
