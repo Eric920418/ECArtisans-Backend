@@ -84,7 +84,7 @@ const productSchema = new Schema(
 		keyword: {
 			type: [String],
 		},
-		img: [
+		image: [
 			{
 				type: String,
 			},

@@ -188,6 +188,18 @@ router.get('/:seller_id/orders', async (req, res, next) => {
 
 //商品資訊
 router.get('/:seller_id/products/all', isAuth, shopControllers.getProductsAll);
-router.post('/product', isAuth, shopControllers.productPost);
+router.get('/:seller_id/products', isAuth, shopControllers.getProducts);
+router.get(
+	'/:seller_id/product/:product_id',
+	isAuth,
+	shopControllers.getProduct
+);
+router.post('/product', isAuth, shopControllers.createProduct);
+router.put('/product/:product_id', isAuth, shopControllers.updateProduct);
+router.delete(
+	'/:seller_id/product/:product_id',
+	isAuth,
+	shopControllers.deleteProduct
+);
 
 module.exports = router;
