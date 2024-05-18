@@ -3,10 +3,15 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
 const Coupon = require('../models/coupon.js');
+const Product = require('../models/product.js');
 
 //這兩行是用來隨機產一組有效的ObjectId 用來測試“找不到使用者” 這個ObjectId，不會被存入資料庫
-// const newuserId = new mongoose.Types.ObjectId();
-// console.log(newuserId.toString());
+const newuserId = new mongoose.Types.ObjectId();
+console.log("fack user id:",newuserId.toString());
+
+//這兩行是用來隨機產一組有效的ObjectId 用來測試“找不到商品” 這個ObjectId，不會被存入資料庫
+const newProductId = new mongoose.Types.ObjectId();
+console.log("Fake product id:", newProductId.toString());
 
 
 // Get 全部買家
@@ -205,4 +210,119 @@ router.get('/:id/discounts/:couponId', async (req, res) => {
   }
 },);
 
+// POST 會員收藏商品
+router.post('/:id/collect', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { productId } = req.body; // 從請求的 body 中讀取 productId
+
+    // 檢查 userId 和 productId 是否符合 ObjectId 規範
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "無效的使用者 ID 或商品 ID"
+      });
+    }
+
+    const userData = await User.findById(userId);
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    // 檢查商品是否存在
+    const productData = await Product.findById(productId);
+    if (!productData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到商品"
+      });
+    }
+    // 檢查使用者是否已經收藏商品
+    if (userData.collect.includes(productId)) {
+      return res.status(409).json({
+        status: "error",
+        message: "已經收藏此商品"
+      });
+    }
+    userData.collect.push(productId);
+    await userData.save();
+    res.json({
+        status: "success",
+        message: "成功新增收藏"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error"
+    });
+  }
+});
+
+// GET 取得指定會員的收藏商品
+router.get('/:id/collect', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    // 檢查 userId 是否為有效的 ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "無效的使用者 ID"
+      });
+    }
+    const userData = await User.findById(userId).populate({path:'collect', select:'_id productName image sellerOwned price reviews sold format'});
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    res.json({
+        status: "success",
+        message: "成功取得資料",
+        data: userData.collect
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    });
+  }
+});
+
+// DELETE 取消收藏商品
+router.delete('/:id/collect/:productId', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const productId = req.params.productId;
+    // 檢查 userId 和 productId 是否符合 ObjectId 規範
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "無效的使用者 ID 或商品 ID"
+      });
+    }
+    // 檢查使用者是否存在，並且使用 $pull 移除商品 ID
+    const userData = await User.findByIdAndUpdate(userId, { $pull: { collect: productId } }, { new: true });
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    res.json({
+        status: "success",
+        message: "成功取消收藏"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error"
+    });
+  }
+});
 module.exports = router;
