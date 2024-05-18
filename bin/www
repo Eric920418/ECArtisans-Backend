@@ -12,6 +12,8 @@ const crypto = require('crypto');
 const Seller = require('../models/seller.js')
 const User = require('../models/user.js')
 
+//聊天室
+var socketIO = require('../scoket-io.js')
 
 function generateSecureRandomNumber(length) {
   const buffer = crypto.randomBytes(Math.ceil(length / 2));
@@ -30,7 +32,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-
+socketIO(server)
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -133,3 +135,21 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+// import { onMounted } from "vue";
+// import io from "scoket.io-client";
+// let socket = {}
+
+// onMounted(() => {
+//   const URL = "http://localhost:3005";
+//   socket = io(URL, { transports: ["websocket"] });
+
+//   scoket.on("connect", (data) => {
+//     console.log("connect", data);
+//   })
+
+// })
+
+
+
+
