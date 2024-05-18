@@ -18,7 +18,7 @@ const userSchema = new Schema({
     }],
     spHistory: Array,
     likeShop: Array,
-    collect: Array,
+    collect: [{type: mongoose.Schema.Types.ObjectId, ref: 'Products'}],
     chat: Array,
 })
 
