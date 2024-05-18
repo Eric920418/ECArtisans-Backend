@@ -90,10 +90,13 @@ const productSchema = new Schema(
 			},
 		],
 		//商品評價
-		start: {
-			type: Number,
-			default: 0,
-		},
+		reviews:[
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Review',
+			}
+		],
+		
 		//已售出數量
 		sold: {
 			type:Number,
@@ -114,6 +117,16 @@ const productSchema = new Schema(
 		versionKey: false,
 	}
 );
+
+// 計算商品評價 
+// productSchema.virtual('rating').get(function() {
+// 	let rating = 0;
+// 	if (this.reviews.length) {
+// 	  const sum = this.reviews.reduce((total, review) => total + review.rate, 0);
+// 	  rating = sum / this.reviews.length;
+// 	}
+// 	return rating;
+//   });
 
 const Product = mongoose.model('Products', productSchema);
 
