@@ -89,6 +89,16 @@ const productSchema = new Schema(
 				type: String,
 			},
 		],
+		//商品評價
+		start: {
+			type: Number,
+			default: 0,
+		},
+		//已售出數量
+		sold: {
+			type:Number,
+			default: 0,
+		},
 		createAt: {
 			type: Date,
 			default: Date.now,
