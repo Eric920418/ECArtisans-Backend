@@ -272,7 +272,7 @@ router.get('/:id/collect', async (req, res) => {
         message: "無效的使用者 ID"
       });
     }
-    const userData = await User.findById(userId).populate({path:'collect', select:'_id productName image haveStore price start sold format'});
+    const userData = await User.findById(userId).populate({path:'collect', select:'_id productName image sellerOwned price start sold format'});
     if (!userData) {
       return res.status(404).json({
         status: "error",
