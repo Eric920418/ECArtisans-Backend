@@ -1,25 +1,25 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 //郵件套件
-var nodemailer = require('nodemailer');
+let nodemailer = require('nodemailer');
 
 //routes
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var activitiesRouter = require('./routes/activities')
-var authRouter = require('./routes/auth')
-var cartsRouter = require('./routes/carts')
-var detailRouter = require('./routes/detail')
-var discountsRouter = require('./routes/discounts')
-var homeRouter = require('./routes/home')
-var ordersRouter = require('./routes/orders')
-var productsRouter = require('./routes/products')
-var searchRouter = require('./routes/search')
-var sellersRouter = require('./routes/sellers')
-var shopRouter = require('./routes/shop')
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
+let activitiesRouter = require('./routes/activities')
+let authRouter = require('./routes/auth')
+let cartsRouter = require('./routes/carts')
+let detailRouter = require('./routes/detail')
+let discountsRouter = require('./routes/discounts')
+let homeRouter = require('./routes/home')
+let ordersRouter = require('./routes/orders')
+let productsRouter = require('./routes/products')
+let searchRouter = require('./routes/search')
+let sellersRouter = require('./routes/sellers')
+let shopRouter = require('./routes/shop')
 const cors = require('cors');
 
 // mongodb
@@ -27,7 +27,7 @@ const dotenv = require('dotenv');
 dotenv.config({path:'./config.env'});
 const mongoose = require('mongoose');
 
-var app = express();
+let app = express();
 
 
 // view engine setup

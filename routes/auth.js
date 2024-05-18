@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 const mongoose = require('mongoose');
 const Seller = require('../models/seller.js');
 const User = require('../models/user.js');
