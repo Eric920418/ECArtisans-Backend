@@ -2,42 +2,12 @@ let express = require('express');
 let router = express.Router();
 const shopControllers = require('../controllers/shopControllers.js');
 
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 const Seller = require('../models/seller.js');
 const Order = require('../models/order.js');
 
-const handleErrorAsync = require('../service/handleErrorAsync.js');
+const isAuth = require('../middlewares/isAuth.js'); //將Auth驗證放到middleware 如果有其他地方需要可以共用
 
 const bcrypt = require('bcrypt'); //加密套件
-
-//驗證token
-const isAuth = handleErrorAsync(async (req, res, next) => {
-	let token;
-	if (
-		req.headers.authorization &&
-		req.headers.authorization.startsWith('Bearer')
-	) {
-		token = req.headers.authorization.split(' ')[1];
-	}
-	if (!token) {
-		return next(appError(401, '你尚未登入!', next));
-	}
-
-	//驗證 token 正確性
-	const decoded = await new Promise((resolve, reject) => {
-		jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(payload);
-			}
-		});
-	});
-	const currentSeller = await Seller.findById(decoded.id);
-	req.user = currentSeller;
-	next();
-});
 
 //商家導覽
 router.get('/:seller_id/home', async (req, res, next) => {
@@ -111,27 +81,23 @@ router.get('/:seller_id/information', async (req, res, next) => {
 });
 router.patch('/:seller_id/information', async (req, res, next) => {
 	const headers = {
-		'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
+		'Access-Control-Allow-Headers':
+			'Content-Type, Authorization, Content-Length, X-Requested-With',
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': 'PATCH, POST, GET, OPTIONS, DELETE ,PUT',
 		'Content-Type': 'application/json',
 	};
 
 	try {
-		let {
-			bossName,
-			phone,
-			brand,
-			address,
-			collection,
-			salesType,
-			introduce
-		} = req.body;
+		let { bossName, phone, brand, address, collection, salesType, introduce } =
+			req.body;
 		const sellerId = req.params.seller_id;
 
 		const seller = await Seller.findById(sellerId);
 		if (!seller) {
-			return res.status(404).json({ status: 'error', message: 'Seller not found' });
+			return res
+				.status(404)
+				.json({ status: 'error', message: 'Seller not found' });
 		}
 		// Update seller information
 		await Seller.updateOne(
@@ -152,7 +118,8 @@ router.patch('/:seller_id/information', async (req, res, next) => {
 
 router.patch('/:seller_id/password', async (req, res, next) => {
 	const headers = {
-		'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
+		'Access-Control-Allow-Headers':
+			'Content-Type, Authorization, Content-Length, X-Requested-With',
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': 'PATCH, POST, GET, OPTIONS, DELETE ,PUT',
 		'Content-Type': 'application/json',
@@ -163,27 +130,27 @@ router.patch('/:seller_id/password', async (req, res, next) => {
 		const sellerId = req.params.seller_id;
 		const sellerPassword = await Seller.findById(sellerId).select('password');
 		if (!sellerPassword) {
-			return res.status(404).json({ status: 'error', message: 'Seller not found' });
+			return res
+				.status(404)
+				.json({ status: 'error', message: 'Seller not found' });
 		}
 		if (!password) {
-			return res.status(400).json({ status: 'error', message: 'Password is required' });
+			return res
+				.status(400)
+				.json({ status: 'error', message: 'Password is required' });
 		}
-		password = await  bcrypt.hash(password, 12);
+		password = await bcrypt.hash(password, 12);
 
-		await Seller.updateOne(
-			{ _id: sellerId },
-			{ password }
-		)
+		await Seller.updateOne({ _id: sellerId }, { password });
 		res.status(200).json({
 			status: 'success',
 			message: 'Seller password updated successfully',
 		});
-	}catch (err) {
+	} catch (err) {
 		console.error(err);
 		res.status(500).json({ status: 'error', message: 'Internal Server Error' });
-
 	}
-})
+});
 //訂單管理
 router.get('/:seller_id/orders', async (req, res, next) => {
 	const headers = {
