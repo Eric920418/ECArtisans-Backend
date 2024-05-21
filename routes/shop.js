@@ -79,7 +79,7 @@ router.get('/:seller_id/information', async (req, res, next) => {
 		);
 	}
 });
-router.patch('/:seller_id/information', async (req, res, next) => {
+router.put('/:seller_id/information', async (req, res, next) => {
 	const headers = {
 		'Access-Control-Allow-Headers':
 			'Content-Type, Authorization, Content-Length, X-Requested-With',
