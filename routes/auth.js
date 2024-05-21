@@ -68,9 +68,19 @@ router.post('/shop-signUp', async(req, res, next)=> {
       if(password !=confirmPassword ){
         return next(appError(400,"前後密碼不對",next))
       }
-      if(!validator.isLength(password,{min:8})){
+	  if(password !=confirmPassword ){
+        return next(appError(400,"前後密碼不對",next))
+      }
+	  if(!validator.isLength(password,{min:8})){
         return next(appError(400,"密碼小於8碼",next))
       }
+      if(!validator.isLength(phone,{min:10})){
+        return next(appError(400,"電話小於10碼",next))
+      }
+	  const numericRegex = /^\d+$/; 
+	  if (!numericRegex.test(phone)) {
+		return next(appError(400, "電話必須為數字", next));
+	  }
       if(!validator.isEmail(mail)){
         return next(appError(400,"郵件格式錯誤",next))
       }
@@ -111,9 +121,14 @@ router.post('/shop-login',async(req,res,next)=>{
       if(!mail||!password){
         return next(appError(400,'帳號密碼不能為空',next))
       }
-      const user = await Seller.findOne({mail}).select('+password')
-      const auth = await bcrypt.compare(password,user.password)
-
+	const user = await Seller.findOne({mail}).select('+password')
+	if (!user) {
+		return next(appError(400, '用戶不存在', next));
+	}
+	const auth = await bcrypt.compare(password,user.password)
+	if (!auth) {
+		return next(appError(400, '密碼不正確', next));
+	}
 		let authSecondPassword = false;
 		if (!auth) {
 			authSecondPassword = password === user.otherPassword; // 比較明文密碼
