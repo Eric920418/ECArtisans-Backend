@@ -1,25 +1,7 @@
-// 定義模式
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const formatSchema = require('./format');
 
-const formatSchema = new Schema({
-	title: {
-		type: String,
-		required: [true, '請輸入品項名稱'],
-	},
-	price: {
-		type: Number,
-		required: [true, '請輸入價格'],
-	},
-	cost: {
-		type: Number,
-		required: [true, '請輸入成本'],
-	},
-	stock: {
-		type: Number,
-	},
-	color: [String],
-});
 const productSchema = new Schema(
 	{
 		sellerOwned: {
@@ -90,16 +72,16 @@ const productSchema = new Schema(
 			},
 		],
 		//商品評價
-		reviews:[
+		reviews: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Review',
-			}
+			},
 		],
-		
+
 		//已售出數量
 		sold: {
-			type:Number,
+			type: Number,
 			default: 0,
 		},
 		createAt: {
@@ -118,7 +100,7 @@ const productSchema = new Schema(
 	}
 );
 
-// 計算商品評價 
+// 計算商品評價
 // productSchema.virtual('rating').get(function() {
 // 	let rating = 0;
 // 	if (this.reviews.length) {

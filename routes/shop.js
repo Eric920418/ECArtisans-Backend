@@ -2,42 +2,12 @@ let express = require('express');
 let router = express.Router();
 const shopControllers = require('../controllers/shopControllers.js');
 
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 const Seller = require('../models/seller.js');
 const Order = require('../models/order.js');
 
-const handleErrorAsync = require('../service/handleErrorAsync.js');
+const isAuth = require('../middlewares/isAuth.js'); //將Auth驗證放到middleware 如果有其他地方需要可以共用
 
 const bcrypt = require('bcrypt'); //加密套件
-
-//驗證token
-const isAuth = handleErrorAsync(async (req, res, next) => {
-	let token;
-	if (
-		req.headers.authorization &&
-		req.headers.authorization.startsWith('Bearer')
-	) {
-		token = req.headers.authorization.split(' ')[1];
-	}
-	if (!token) {
-		return next(appError(401, '你尚未登入!', next));
-	}
-
-	//驗證 token 正確性
-	const decoded = await new Promise((resolve, reject) => {
-		jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(payload);
-			}
-		});
-	});
-	const currentSeller = await Seller.findById(decoded.id);
-	req.user = currentSeller;
-	next();
-});
 
 //商家導覽
 router.get('/:seller_id/home', async (req, res, next) => {
