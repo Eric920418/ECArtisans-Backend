@@ -89,68 +89,38 @@ router.put('/:seller_id/information', async (req, res, next) => {
 	};
 
 	try {
-		let { bossName, phone, brand, address, collection, salesType, introduce } =
-			req.body;
+
+
+		const updateData = {
+			bossName: req.body.bossName,
+			gender: req.body.gender,
+			brand: req.body.brand,
+			phone: req.body.phone,
+			address: req.body.address,
+			password: req.body.password,
+			otherPassword: req.body.otherPassword,
+			collection: req.body.collection,
+			salesType: req.body.salesType,
+			introduce: req.body.introduce,
+		};
 		const sellerId = req.params.seller_id;
 
-		const seller = await Seller.findById(sellerId);
-		if (!seller) {
-			return res
-				.status(404)
-				.json({ status: 'error', message: 'Seller not found' });
-		}
-		// Update seller information
-		await Seller.updateOne(
-			{ _id: sellerId },
-			{ bossName, phone, brand, address, collection, salesType, introduce }
-		);
+		const updatedUser = await Seller.findByIdAndUpdate(sellerId, { $set: updateData }, { new: true });
+
 
 		// Send success response
 		res.status(200).json({
 			status: 'success',
-			message: 'Seller information updated successfully',
+			message: '成功修改資料',
 		});
+
+		res.end();
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ status: 'error', message: 'Internal Server Error' });
 	}
 });
 
-router.patch('/:seller_id/password', async (req, res, next) => {
-	const headers = {
-		'Access-Control-Allow-Headers':
-			'Content-Type, Authorization, Content-Length, X-Requested-With',
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': 'PATCH, POST, GET, OPTIONS, DELETE ,PUT',
-		'Content-Type': 'application/json',
-	};
-
-	try {
-		let { password } = req.body;
-		const sellerId = req.params.seller_id;
-		const sellerPassword = await Seller.findById(sellerId).select('password');
-		if (!sellerPassword) {
-			return res
-				.status(404)
-				.json({ status: 'error', message: 'Seller not found' });
-		}
-		if (!password) {
-			return res
-				.status(400)
-				.json({ status: 'error', message: 'Password is required' });
-		}
-		password = await bcrypt.hash(password, 12);
-
-		await Seller.updateOne({ _id: sellerId }, { password });
-		res.status(200).json({
-			status: 'success',
-			message: 'Seller password updated successfully',
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ status: 'error', message: 'Internal Server Error' });
-	}
-});
 //訂單管理
 router.get('/:seller_id/orders', async (req, res, next) => {
 	const headers = {
