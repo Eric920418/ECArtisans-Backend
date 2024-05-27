@@ -79,47 +79,56 @@ router.get('/:seller_id/information', async (req, res, next) => {
 		);
 	}
 });
-router.put('/:seller_id/information', async (req, res, next) => {
-	const headers = {
-		'Access-Control-Allow-Headers':
-			'Content-Type, Authorization, Content-Length, X-Requested-With',
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': 'PATCH, POST, GET, OPTIONS, DELETE ,PUT',
-		'Content-Type': 'application/json',
+router.put('/:seller_id/information', isAuth ,async (req, res, next) => {
+	const {
+	  bossName,
+	  gender,
+	  brand,
+	  phone,
+	  address,
+	  password,
+	  otherPassword,
+	  collection,
+	  salesType,
+	  introduce,
+	  avatar,
+	} = req.body;
+  
+	const sellerId = req.params.seller_id;
+	password = await bcrypt.hash(req.body.password, 12);
+	const updateData = {
+	  bossName,
+	  gender,
+	  brand,
+	  phone,
+	  address,
+	  password,
+	  otherPassword,
+	  collection,
+	  salesType,
+	  introduce,
+	  avatar,
 	};
-
+  
 	try {
-
-
-		const updateData = {
-			bossName: req.body.bossName,
-			gender: req.body.gender,
-			brand: req.body.brand,
-			phone: req.body.phone,
-			address: req.body.address,
-			password: req.body.password,
-			otherPassword: req.body.otherPassword,
-			collection: req.body.collection,
-			salesType: req.body.salesType,
-			introduce: req.body.introduce,
-		};
-		const sellerId = req.params.seller_id;
-
-		const updatedUser = await Seller.findByIdAndUpdate(sellerId, { $set: updateData }, { new: true });
-
-
-		// Send success response
-		res.status(200).json({
-			status: 'success',
-			message: '成功修改資料',
-		});
-
-		res.end();
+	  const updateUser = await Seller.findByIdAndUpdate(sellerId, { $set: updateData }, { new: true });
+  
+	  if (!updateUser) {
+		return next(appError(404, '沒有找到該賣家', next));
+	  }
+  
+	   // 建議再加其他的middleware  像是沒有加入圖片、前後資料少帶之類的
+  
+	  res.status(200).json({
+		status: 'success',
+		message: '成功修改資料',
+		data: updateUser,
+	  });
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+	  console.error(err);
+	  res.status(500).json({ status: 'error', message: 'Internal Server Error' });
 	}
-});
+  });
 
 //訂單管理
 router.get('/:seller_id/orders', async (req, res, next) => {
