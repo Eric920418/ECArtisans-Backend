@@ -127,7 +127,7 @@ router.post('/shop-login',async(req,res,next)=>{
 	}
 	const auth = await bcrypt.compare(password,user.password)
 	if (!auth) {
-		return next(appError(400, '密碼不正確', next));
+		return next(appError(400, '顯示帳號錯誤', next));
 	}
 		let authSecondPassword = false;
 		if (!auth) {

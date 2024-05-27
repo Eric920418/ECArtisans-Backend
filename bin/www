@@ -150,6 +150,19 @@ function onListening() {
 
 // })
 
+//   onUnmounted(() => {
+//     scoket?.disconnect();
+//   }),
+//    const chatStatus = reactive({
+//      user: "",
+//      connect: "",
+//    })
+//    const message = reactive({
 
+//    })
+  
+//   function sendMessage({user , connect}) {
+//     socket.emit("message", { user, connect });
+//   }
 
 
