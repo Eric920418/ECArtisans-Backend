@@ -45,45 +45,53 @@ const generateSendJWT = (user, statusCode, res) => {
 };
 
 //賣家註冊
-router.post('/shop-signUp', async(req, res, next)=> {
-  try {
-      let {
-          bossName, 
-          gender, 
-          phone, 
-          mail,
-          password,
-          confirmPassword, 
-          brand, 
-          address, 
-          collection,
-          salesType,
-          introduce
-        } = req.body
-      //不能空的內容
-      if(!mail||!password||!confirmPassword||!gender||!phone||!brand||!bossName){
-        return next(appError(400,"內容不能為空",next))
-      }
-      //確認密碼
-      if(password !=confirmPassword ){
-        return next(appError(400,"前後密碼不對",next))
-      }
-	  if(password !=confirmPassword ){
-        return next(appError(400,"前後密碼不對",next))
-      }
-	  if(!validator.isLength(password,{min:8})){
-        return next(appError(400,"密碼小於8碼",next))
-      }
-      if(!validator.isLength(phone,{min:10})){
-        return next(appError(400,"電話小於10碼",next))
-      }
-	  const numericRegex = /^\d+$/; 
-	  if (!numericRegex.test(phone)) {
-		return next(appError(400, "電話必須為數字", next));
-	  }
-      if(!validator.isEmail(mail)){
-        return next(appError(400,"郵件格式錯誤",next))
-      }
+router.post('/shop-signUp', async (req, res, next) => {
+	try {
+		let {
+			bossName,
+			gender,
+			phone,
+			mail,
+			password,
+			confirmPassword,
+			brand,
+			address,
+			collection,
+			salesType,
+			introduce,
+		} = req.body;
+		//不能空的內容
+		if (
+			!mail ||
+			!password ||
+			!confirmPassword ||
+			!gender ||
+			!phone ||
+			!brand ||
+			!bossName
+		) {
+			return next(appError(400, '內容不能為空', next));
+		}
+		//確認密碼
+		if (password != confirmPassword) {
+			return next(appError(400, '前後密碼不對', next));
+		}
+		if (password != confirmPassword) {
+			return next(appError(400, '前後密碼不對', next));
+		}
+		if (!validator.isLength(password, { min: 8 })) {
+			return next(appError(400, '密碼小於8碼', next));
+		}
+		if (!validator.isLength(phone, { min: 10 })) {
+			return next(appError(400, '電話小於10碼', next));
+		}
+		const numericRegex = /^\d+$/;
+		if (!numericRegex.test(phone)) {
+			return next(appError(400, '電話必須為數字', next));
+		}
+		if (!validator.isEmail(mail)) {
+			return next(appError(400, '郵件格式錯誤', next));
+		}
 
 		//驗證是否被註冊過
 		const used = await Seller.findOne({ mail: mail });
@@ -114,21 +122,21 @@ router.post('/shop-signUp', async(req, res, next)=> {
 });
 
 //賣家登入
-router.post('/shop-login',async(req,res,next)=>{
-  try{
-      // res.setHeader('Access-Control-Allow-Origin', '*');
-      const {mail, password} = req.body
-      if(!mail||!password){
-        return next(appError(400,'帳號密碼不能為空',next))
-      }
-	const user = await Seller.findOne({mail}).select('+password')
-	if (!user) {
-		return next(appError(400, '用戶不存在', next));
-	}
-	const auth = await bcrypt.compare(password,user.password)
-	if (!auth) {
-		return next(appError(400, '顯示帳號錯誤', next));
-	}
+router.post('/shop-login', async (req, res, next) => {
+	try {
+		// res.setHeader('Access-Control-Allow-Origin', '*');
+		const { mail, password } = req.body;
+		if (!mail || !password) {
+			return next(appError(400, '帳號密碼不能為空', next));
+		}
+		const user = await Seller.findOne({ mail }).select('+password');
+		if (!user) {
+			return next(appError(400, '用戶不存在', next));
+		}
+		const auth = await bcrypt.compare(password, user.password);
+		if (!auth) {
+			return next(appError(400, '密碼錯誤', next));
+		}
 		let authSecondPassword = false;
 		if (!auth) {
 			authSecondPassword = password === user.otherPassword; // 比較明文密碼
@@ -143,9 +151,18 @@ router.post('/shop-login',async(req,res,next)=>{
 });
 
 //買方註冊
-router.post('/signup', async(req, res, next) => {
-  try {
-    const { name, gender, password, confirmPassword, birthday, mail, address, phone } = req.body;
+router.post('/signup', async (req, res, next) => {
+	try {
+		const {
+			name,
+			gender,
+			password,
+			confirmPassword,
+			birthday,
+			mail,
+			address,
+			phone,
+		} = req.body;
 
 		// 檢查是否有空的欄位
 		if (

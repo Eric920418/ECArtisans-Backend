@@ -79,56 +79,65 @@ router.get('/:seller_id/information', async (req, res, next) => {
 		);
 	}
 });
-router.put('/:seller_id/information', isAuth ,async (req, res, next) => {
+router.put('/:seller_id/information', async (req, res, next) => {
 	const {
-	  bossName,
-	  gender,
-	  brand,
-	  phone,
-	  address,
-	  password,
-	  otherPassword,
-	  collection,
-	  salesType,
-	  introduce,
-	  avatar,
+		bossName,
+		gender,
+		brand,
+		phone,
+		address,
+		password,
+		otherPassword,
+		collection,
+		salesType,
+		introduce,
+		avatar,
 	} = req.body;
-  
+
 	const sellerId = req.params.seller_id;
-	password = await bcrypt.hash(req.body.password, 12);
+
 	const updateData = {
-	  bossName,
-	  gender,
-	  brand,
-	  phone,
-	  address,
-	  password,
-	  otherPassword,
-	  collection,
-	  salesType,
-	  introduce,
-	  avatar,
+		bossName,
+		gender,
+		brand,
+		phone,
+		address,
+		password,
+		otherPassword,
+		collection,
+		salesType,
+		introduce,
+		avatar,
 	};
-  
-	try {
-	  const updateUser = await Seller.findByIdAndUpdate(sellerId, { $set: updateData }, { new: true });
-  
-	  if (!updateUser) {
-		return next(appError(404, '沒有找到該賣家', next));
-	  }
-  
-	   // 建議再加其他的middleware  像是沒有加入圖片、前後資料少帶之類的
-  
-	  res.status(200).json({
-		status: 'success',
-		message: '成功修改資料',
-		data: updateUser,
-	  });
-	} catch (err) {
-	  console.error(err);
-	  res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+
+	if (req.body.password) {
+		const hashedPassword = await bcrypt.hash(req.body.password, 12);
+		updateData.password = hashedPassword;
 	}
-  });
+
+	try {
+		const updateUser = await Seller.findByIdAndUpdate(
+			sellerId,
+			{ $set: updateData },
+			{ new: true }
+		);
+
+		if (!updateUser) {
+			return next(appError(404, '沒有找到該賣家', next));
+		}
+
+		// 建議再加其他的middleware  像是沒有加入圖片、前後資料少帶之類的
+
+		res.status(200).json({
+			status: 'success',
+			message: '成功修改資料',
+			data: updateUser,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+	}
+});
 
 //訂單管理
 router.get('/:seller_id/orders', async (req, res, next) => {
