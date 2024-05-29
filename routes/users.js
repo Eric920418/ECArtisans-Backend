@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const User = require('../models/user.js');
 const Coupon = require('../models/coupon.js');
 const Product = require('../models/product.js');
+const bcrypt = require('bcrypt');
 
 //這兩行是用來隨機產一組有效的ObjectId 用來測試“找不到使用者” 這個ObjectId，不會被存入資料庫
 const newuserId = new mongoose.Types.ObjectId();
@@ -83,15 +84,20 @@ router.put('/:id', async(req, res, next)=> {
             otherPassword: req.body.otherPassword,
         };
 
-        const updatedUser = await User.findByIdAndUpdate(user, { $set: updateData }, { new: true });
+    if(req.body.password){
+        const hashedPassword = await bcrypt.hash(req.body.password, 12);
+        updateData.password = hashedPassword;
+    }
 
-        res.status(200).json({
-            status: "success",
-            message: "成功修改資料",
-            data: updatedUser
-        });
+    const updatedUser = await User.findByIdAndUpdate(user, { $set: updateData }, { new: true });
 
-        res.end();
+    res.status(200).json({
+        status: "success",
+        message: "成功修改資料",
+        data: updatedUser
+    });
+
+    res.end();
   } catch (err) {
     console.error(err);
     res.status(500).json({
