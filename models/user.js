@@ -17,7 +17,9 @@ const userSchema = new Schema({
         ref: 'Coupons'
     }],
     spHistory: Array,
-    likeShop: Array,
+    likeShop: [
+        {type: mongoose.Schema.Types.ObjectId, ref: 'Sellers'}
+    ],
     collect: [{type: mongoose.Schema.Types.ObjectId, ref: 'Products'}],
     chat: Array,
 })
