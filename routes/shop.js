@@ -208,11 +208,11 @@ router.get(
 	shopControllers.coupons.getCoupon
 );
 router.post('/coupon', isAuth, shopControllers.coupons.createCoupon);
-// router.put('/coupon/:coupon_id', isAuth, shopControllers.);
-// router.delete(
-// 	'/:seller_id/coupon/:coupon_id',
-// 	isAuth,
-// 	shopControllers.
-// );
+router.put('/coupon/:coupon_id', isAuth, shopControllers.coupons.updateCoupon);
+router.delete(
+	'/:seller_id/coupon/:coupon_id',
+	isAuth,
+	shopControllers.coupons.deleteCoupon
+);
 
 module.exports = router;

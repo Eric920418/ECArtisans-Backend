@@ -22,7 +22,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const appError = require('../service/appError.js');
-const handleError = require('../service/handleError.js');
 
 //token
 const generateSendJWT = (user, statusCode, res) => {
