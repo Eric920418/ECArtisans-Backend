@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const User = require('../models/user.js');
 const Coupon = require('../models/coupon.js');
 const Product = require('../models/product.js');
+const bcrypt = require('bcrypt');
+const Seller = require('../models/seller.js');
 
 //這兩行是用來隨機產一組有效的ObjectId 用來測試“找不到使用者” 這個ObjectId，不會被存入資料庫
 const newuserId = new mongoose.Types.ObjectId();
@@ -83,15 +85,20 @@ router.put('/:id', async(req, res, next)=> {
             otherPassword: req.body.otherPassword,
         };
 
-        const updatedUser = await User.findByIdAndUpdate(user, { $set: updateData }, { new: true });
+    if(req.body.password){
+        const hashedPassword = await bcrypt.hash(req.body.password, 12);
+        updateData.password = hashedPassword;
+    }
 
-        res.status(200).json({
-            status: "success",
-            message: "成功修改資料",
-            data: updatedUser
-        });
+    const updatedUser = await User.findByIdAndUpdate(user, { $set: updateData }, { new: true });
 
-        res.end();
+    res.status(200).json({
+        status: "success",
+        message: "成功修改資料",
+        data: updatedUser
+    });
+
+    res.end();
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -323,6 +330,131 @@ router.delete('/:id/collect/:productId', async (req, res) => {
       status: "error",
       message: "Internal Server Error"
     });
+  }
+});
+
+// POST 會員收藏店家
+router.post('/:id/collect-shop', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { sellerId } = req.body; // 從請求的 body 中讀取 sellerId
+
+    // 檢查 userId 和 sellerId 是否符合 ObjectId 規範
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(sellerId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "無效的使用者 ID 或店家 ID"
+      });
+    }
+
+    const userData = await User.findById(userId);
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    // 檢查店家是否存在
+    const shopData = await Seller.findById(sellerId);
+    if (!shopData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到店家"
+      });
+    }
+    // 檢查使用者是否已經收藏店家
+    if (userData.likeShop.includes(sellerId)) {
+      return res.status(409).json({
+        status: "error",
+        message: "已經收藏此店家"
+      });
+    }
+    userData.likeShop.push(sellerId);
+    await userData.save();
+    res.json({
+        status: "success",
+        message: "成功新增收藏"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error"
+    });
+  }
+});
+
+// GET 取得指定會員的收藏店家
+router.get('/:id/collect-shop', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    // 檢查 userId 是否為有效的 ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "使用者 ID 輸入錯誤"
+      });
+    }
+    const userData = await User.findById(userId).populate({path:'likeShop', select:'_id brand avatar'});
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    res.json({
+        status: "success",
+        message: "成功取得資料",
+        data: userData.likeShop
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    });
+  }
+});
+
+// DELETE 取消收藏店家
+router.delete('/:id/collect-shop/:sellerId', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const sellerId = req.params.sellerId;
+
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(sellerId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "使用者 ID 或店家 ID 輸入錯誤"
+      });
+    }
+
+    const sellerData = await Seller.findById(sellerId);
+    if(!sellerData){
+      return res.status(404).json({
+        status: "error",
+        message: "找不到店家"
+      })
+    }
+
+    // 檢查使用者是否存在，並且使用 $pull 移除店家 ID
+    const userData = await User.findByIdAndUpdate(userId, { $pull: { likeShop: sellerId } }, { new: true });
+    if (!userData) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到使用者"
+      });
+    }
+    res.json({
+        status: "success",
+        message: "成功取消收藏"
+    });
+  } catch (err) {
+    console.error(err);
+  res.status(500).json({
+    status: "error",
+    message: err.message
+  });
   }
 });
 module.exports = router;

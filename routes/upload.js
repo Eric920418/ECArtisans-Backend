@@ -41,15 +41,21 @@ router.post(
 			};
 			// 取得檔案的網址
 			blob.getSignedUrl(config, (err, fileUrl) => {
-				res.status(200).json({ status: 'success', fileUrl });
+				res.status(200).json({
+					status: true,
+					message: '圖片上傳成功啦~ (ﾉ >ω<)ﾉ',
+					fileUrl,
+				});
 			});
 		});
 
 		// 如果上傳過程中發生錯誤，會觸發 error 事件
 		blobStream.on('error', (err) => {
-			res.status(500).send('上傳失敗，請重新上傳一次');
+			res.status(500).json({
+				status: false,
+				message: '上傳失敗了，只能請您重新上傳一次(˘•ω•˘)',
+			});
 		});
-
 		// 將檔案的 buffer 寫入 blobStream
 		blobStream.end(file.buffer);
 	})
