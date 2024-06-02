@@ -176,37 +176,37 @@ router.get('/:seller_id/orders', async (req, res, next) => {
 router.get(
 	'/:seller_id/products/all',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.products.getProductsAll
 );
 router.get(
 	'/:seller_id/products',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.products.getProducts
 );
 router.get(
 	'/:seller_id/product/:product_id',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.products.getProduct
 );
 router.post(
 	'/product',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.products.createProduct
 );
 router.put(
 	'/product/:product_id',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.products.updateProduct
 );
 router.delete(
 	'/:seller_id/product/:product_id',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.products.deleteProduct
 );
 
@@ -214,31 +214,31 @@ router.delete(
 router.get(
 	'/:seller_id/coupons',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.coupons.getCoupons
 );
 router.get(
 	'/:seller_id/coupon/:coupon_id',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.coupons.getCoupon
 );
 router.post(
 	'/coupon',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.coupons.createCoupon
 );
 router.put(
 	'/coupon/:coupon_id',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.coupons.updateCoupon
 );
 router.delete(
 	'/:seller_id/coupon/:coupon_id',
 	isAuth,
-	restriction('user'),
+	restriction('seller'),
 	shopControllers.coupons.deleteCoupon
 );
 
